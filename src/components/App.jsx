@@ -1,4 +1,7 @@
 import { Component } from "react";
+import VoteResult from "./AppResult";
+import VoteAction from "./AppActions";
+
 
 
 export default class Vote extends Component  {
@@ -19,33 +22,31 @@ state = {
     })
   }
 
+  countTotal() {
+    const { good, neutral, bad } = this.state;
+    return good + neutral + bad;
+  }
+
+  procentage(propertyName) {
+    const total = this.countTotal();
+    if (!total) {
+      return 0;
+    }
+    const value = this.state[propertyName];
+    const result = (value / total) * 100;
+    return Number(result.toFixed(2))
+  }
+
   render() {
-    const{ good, neutral, bad} = this.state
-     return (<>
+    const { good, neutral, bad } = this.state
+    const total = this.countTotal();
+    const procent = this.procentage("good")
+    return (<>
+      <VoteAction leaveVote={this.leaveVote} />
+      {!total ?  <div> <h2>There is no feedback</h2></div> : <VoteResult procent={procent} total={total} good={good}
+        neutral={neutral}
+      bad={bad}/>}
       
-<div>
-          <h2>Please leave feedback</h2>
-  <div>
-          <button onClick={() => this.leaveVote("good")}>Good</button>
-  </div>
-  <div>
-          <button onClick={() => this.leaveVote("neutral")}>Neutral</button>
-  </div>
-  <div>
-          <button onClick={() => this.leaveVote("bad")}>Bad</button>
-  </div>
-        
-</div>
-      <div>
-        <h2>Statistics</h2>
-        <ul>
-           <li>Good:{good}</li>
-          <li>Neutral:{neutral}</li>
-           <li>Bad:{bad}</li>
-           <li>Total:{good + neutral + bad}</li>
-          <li>Positive feedback:{good / (good + neutral + bad) *100}%</li>
-        </ul>
-      </div>
     </>
     );
 }
